@@ -17,6 +17,7 @@ public final class Style implements Cloneable {
     private boolean textWrap;
     private int textRotation = 0;
     private TEXT_POSITION alignment = null;
+    private CellBorder cellBorder;
     
     /**
      * Constructs an empty-default Style.
@@ -215,6 +216,14 @@ public final class Style implements Cloneable {
     		throw new IllegalArgumentException("Value must be > -360 and < 360: you set "+textRotation);
 		this.textRotation = textRotation;
 	}
+    
+    public CellBorder getCellBorder() {
+		return cellBorder;
+	}
+
+    public void setCellBorder(CellBorder border) {
+    	this.cellBorder = border;
+    }
 
     public Object clone() throws CloneNotSupportedException {
         return super.clone();
@@ -235,6 +244,7 @@ public final class Style implements Cloneable {
         if (fontColor != null ? !fontColor.equals(style.fontColor) : style.fontColor != null) return false;
         if(alignment != null ?  !alignment.equals(style.alignment) : style.alignment != null) return false;
         if(textRotation != style.textRotation) return false;
+        if(cellBorder != style.cellBorder) return false;
         return backgroundColor != null ? backgroundColor.equals(style.backgroundColor) : style.backgroundColor == null;
     }
 
@@ -249,6 +259,7 @@ public final class Style implements Cloneable {
         result = 31 * result + (textWrap ? 1 : 0);
         result = 31 * result + textRotation;
         result = result + (alignment == TEXT_POSITION.Left ? 1 : alignment == TEXT_POSITION.Center ? 2 : 3);
+        result = result + (cellBorder == null ? 0 : cellBorder.hashCode());
         return result;
     }
 
@@ -290,6 +301,29 @@ public final class Style implements Cloneable {
 
         if(textRotation != 0)
         	result.put("rotation-angle", String.valueOf(textRotation));
+        
+        if(cellBorder != null)
+        	result.put("text-align", getTextPosition());
+        
+        if (cellBorder != null) {
+        	result.put("border", cellBorder.toString());
+
+        	if (cellBorder.getTop() == 1) {
+        		result.put("border-top", cellBorder.toString());
+        	}
+
+        	if (cellBorder.getBottom() == 1) {
+        		result.put("border-bottom", cellBorder.toString());
+        	}
+
+        	if (cellBorder.getLeft() == 1) {
+        		result.put("border-left", cellBorder.toString());
+        	}
+
+        	if (cellBorder.getRight() == 1) {
+        		result.put("border-right", cellBorder.toString());
+        	}
+        }
         return result;
     }
 

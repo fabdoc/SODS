@@ -3,6 +3,9 @@ package com.github.miachm.sods;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
+
+import com.github.miachm.sods.CellBorder.BorderStyle;
+
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
@@ -309,7 +312,7 @@ class OdsWritter {
             out.writeAttribute("style:family", "table-cell");
             out.writeAttribute("style:name", key);
 
-            if (style.getBackgroundColor() != null || style.getTextRotation() != 0 || style.isTextWrap()) {
+            if (style.getBackgroundColor() != null || style.getTextRotation() != 0 || style.isTextWrap() || style.getCellBorder() != null) {
                 out.writeStartElement("style:table-cell-properties");
                 if (style.getBackgroundColor() != null) {
                 	out.writeAttribute("fo:background-color", style.getBackgroundColor().toString());
@@ -320,6 +323,34 @@ class OdsWritter {
                 }
                 if(style.isTextWrap()) {
                 	out.writeAttribute("fo:wrap-option", "wrap");
+                }
+                if(style.getCellBorder() != null) {
+                	if(style.getCellBorder().isFull()) {
+                		out.writeAttribute("fo:border", style.getCellBorder().toString());
+                		//spessori per double
+                		if(style.getCellBorder().getStyle().equals(BorderStyle._double) ) {
+                			out.writeAttribute("style:border-line-width", "0.012cm 0.012cm 0.012cm");
+                		}
+                	}
+                	else {
+                		if (style.getCellBorder().getTop() == 1) {
+                			out.writeAttribute("fo:border-top", style.getCellBorder().toString());
+                		}
+                		if (style.getCellBorder().getBottom() == 1) {
+                			out.writeAttribute("fo:border-bottom", style.getCellBorder().toString());
+                		}
+                		if (style.getCellBorder().getLeft() == 1) {
+                			out.writeAttribute("fo:border-left", style.getCellBorder().toString());
+                		}
+                		if (style.getCellBorder().getRight() == 1) {
+                			out.writeAttribute("fo:border-right", style.getCellBorder().toString());
+                		}
+                		//spessori per double
+                		if(style.getCellBorder().getStyle().equals(BorderStyle._double) ) {
+                			out.writeAttribute("style:border-line-width", "0.012cm 0.012cm 0.012cm");
+                		}
+
+                	}
                 }
                 out.writeEndElement();
             }
