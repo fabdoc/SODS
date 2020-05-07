@@ -309,9 +309,18 @@ class OdsWritter {
             out.writeAttribute("style:family", "table-cell");
             out.writeAttribute("style:name", key);
 
-            if (style.getBackgroundColor() != null) {
+            if (style.getBackgroundColor() != null || style.getTextRotation() != 0 || style.isTextWrap()) {
                 out.writeStartElement("style:table-cell-properties");
-                out.writeAttribute("fo:background-color", style.getBackgroundColor().toString());
+                if (style.getBackgroundColor() != null) {
+                	out.writeAttribute("fo:background-color", style.getBackgroundColor().toString());
+                }
+                if(style.getTextRotation() != 0) {
+                	out.writeAttribute("style:rotation-angle", String.valueOf(style.getTextRotation()));
+                	out.writeAttribute("style:rotation-align", "none");
+                }
+                if(style.isTextWrap()) {
+                	out.writeAttribute("fo:wrap-option", "wrap");
+                }
                 out.writeEndElement();
             }
 
@@ -342,6 +351,7 @@ class OdsWritter {
             	out.writeAttribute("fo:text-align", style.getTextAlignment());
             	out.writeEndElement();
             }
+
 
             out.writeEndElement();
             stylesUsed.put(style, key);

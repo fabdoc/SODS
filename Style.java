@@ -14,6 +14,8 @@ public final class Style implements Cloneable {
     private Color fontColor;
     private Color backgroundColor;
     private int fontSize = -1;
+    private boolean textWrap;
+    private int textRotation = 0;
     private TEXT_POSITION alignment = null;
     
     /**
@@ -21,6 +23,13 @@ public final class Style implements Cloneable {
      */
     public Style() {
 
+    }
+
+    public Style(boolean bold, boolean italic, boolean underline, java.awt.Color fontColor, java.awt.Color backgroundColor, int fontSize) {
+    	this(bold, italic, underline,
+    		 new Color(fontColor.getRed(), fontColor.getGreen(), fontColor.getBlue()),
+    		 new Color(backgroundColor.getRed(), backgroundColor.getGreen(), backgroundColor.getBlue()),
+    		 fontSize);
     }
 
     public Style(boolean bold, boolean italic, boolean underline, Color fontColor, Color backgroundColor, int fontSize) {
@@ -189,6 +198,24 @@ public final class Style implements Cloneable {
 		return alignment.toString().toLowerCase();
 	}
 
+    public boolean isTextWrap() {
+		return textWrap;
+	}
+
+    public void setTextWrap(boolean wrap) {
+    	this.textWrap = wrap;
+    }
+    
+    public int getTextRotation() {
+		return textRotation;
+	}
+
+    public void setTextRotation(int textRotation) {
+    	if(textRotation < -359 || textRotation > 359)
+    		throw new IllegalArgumentException("Value must be > -360 and < 360: you set "+textRotation);
+		this.textRotation = textRotation;
+	}
+
     public Object clone() throws CloneNotSupportedException {
         return super.clone();
     }
@@ -204,8 +231,10 @@ public final class Style implements Cloneable {
         if (italic != style.italic) return false;
         if (underline != style.underline) return false;
         if (fontSize != style.fontSize) return false;
+        if (textWrap != style.textWrap) return false;
         if (fontColor != null ? !fontColor.equals(style.fontColor) : style.fontColor != null) return false;
         if(alignment != null ?  !alignment.equals(style.alignment) : style.alignment != null) return false;
+        if(textRotation != style.textRotation) return false;
         return backgroundColor != null ? backgroundColor.equals(style.backgroundColor) : style.backgroundColor == null;
     }
 
@@ -217,6 +246,8 @@ public final class Style implements Cloneable {
         result = 31 * result + (fontColor != null ? fontColor.hashCode() : 0);
         result = 31 * result + (backgroundColor != null ? backgroundColor.hashCode() : 0);
         result = 31 * result + fontSize;
+        result = 31 * result + (textWrap ? 1 : 0);
+        result = 31 * result + textRotation;
         result = result + (alignment == TEXT_POSITION.Left ? 1 : alignment == TEXT_POSITION.Center ? 2 : 3);
         return result;
     }
@@ -253,6 +284,12 @@ public final class Style implements Cloneable {
 
         if(alignment != null)
         	result.put("text-align", getTextPosition());
+        
+        if (isTextWrap())
+        	result.put("wrap", "wrap");
+
+        if(textRotation != 0)
+        	result.put("rotation-angle", String.valueOf(textRotation));
         return result;
     }
 
